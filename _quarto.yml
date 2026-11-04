@@ -1,17 +1,18 @@
-
 project:
   type: website
 
 website:
   title: "The Education Equation"
   navbar:
-    background: "#142D4E"
+    background: "#10243A"
     foreground: "#FFFFFF"
     left:
       - text: "Home"
         href: index.qmd
-      - text: "About the Research"
+      - text: "Research"
         href: about.qmd
+  page-footer:
+    center: "The Education Equation | U.S. Census Research Project"
 
 format:
   html:

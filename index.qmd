@@ -1,48 +1,81 @@
-
 ---
 title: "Is a College Degree Worth It?"
+subtitle: "Exploring Education and Income Across America"
 title-block-banner: true
 ---
 
-## The Education Equation
+## 🎓 The Education Equation
 
-### Does higher education really lead to higher income?
+Does having more college graduates in a community
+correspond with higher household income?
 
-College is often described as an investment in your future.
-But does earning a degree actually correspond with higher
-income across the United States?
+This project explores the relationship between educational
+attainment and economic opportunity using publicly
+available data from the U.S. Census Bureau.
 
-Using data from the U.S. Census Bureau, this project
-explores how educational attainment and household income
-are related across different communities.
+::: {.callout-note}
+## Research Hypothesis
 
-## What We're Investigating
+Communities with higher percentages of college graduates
+will generally have higher median household incomes.
+:::
 
-### Education
+## 📊 Explore Real Census Data
 
-What percentage of adults have earned a bachelor's
-degree or higher?
+The U.S. Census Bureau publishes information about
+education and household income through its American
+Community Survey.
 
-### Income
+The following official Census QuickFacts pages provide
+education and income statistics for three locations.
 
-How does median household income differ across
-communities?
+| Location | Census Data |
+|---|---|
+| Sarasota County, Florida | [View Census Data](https://www.census.gov/quickfacts/fact/table/sarasotacountyflorida/PST045224) |
+| Florida | [View Census Data](https://www.census.gov/quickfacts/fact/table/FL/PST045224) |
+| United States | [View Census Data](https://www.census.gov/quickfacts/fact/table/US/PST045224) |
 
-### Geography
+## 📈 What Are We Comparing?
 
-Does the relationship between education and income
-change across Sarasota County, Florida, and the
-United States?
+### Educational Attainment
 
-## Explore the Data
+The percentage of adults age 25 and older who have
+earned a bachelor's degree or higher.
 
-Coming soon: Interactive Census maps, state comparisons,
-and visualizations of education and income.
+### Household Income
 
-## Why This Matters
+Median household income, which represents the midpoint
+of household incomes in a community.
+
+## 🔍 Why These Variables Matter
+
+Education is often associated with greater employment
+opportunities and earning potential.
+
+By comparing educational attainment and household income,
+we can investigate whether communities with more college
+graduates also tend to have higher incomes.
+
+However, a relationship between these variables does not
+necessarily mean that education directly causes higher
+income.
+
+## 🏛️ Why This Research Matters
 
 Understanding the relationship between education and
-income can help us better understand economic opportunity,
-inequality, and the value of higher education.
+income can contribute to discussions about economic
+mobility, educational opportunity, and inequality.
 
-*Data source: U.S. Census Bureau, American Community Survey.*
+## 🌎 Future Research
+
+Future versions of this project could compare counties
+throughout Florida and states across the United States,
+using interactive graphs and maps.
+
+---
+
+**Data Source:** U.S. Census Bureau, QuickFacts and
+American Community Survey.
+
+*This is an exploratory project. No causal conclusions
+are drawn from the comparisons.*
