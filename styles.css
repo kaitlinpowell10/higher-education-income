@@ -1,0 +1,53 @@
+
+body {
+  background-color: #FAF8F3;
+  color: #243247;
+  font-family: "Arial", sans-serif;
+  line-height: 1.8;
+}
+
+h1, h2, h3 {
+  color: #142D4E;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2.8rem;
+}
+
+h2 {
+  margin-top: 2.5rem;
+  border-bottom: 2px solid #D7B98E;
+  padding-bottom: 12px;
+}
+
+.navbar {
+  background-color: #142D4E !important;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+  color: white !important;
+}
+
+.quarto-title-banner {
+  background: linear-gradient(
+    135deg,
+    #142D4E,
+    #365B80
+  ) !important;
+  padding: 65px 20px;
+}
+
+.quarto-title-banner h1 {
+  color: white !important;
+}
+
+main.content {
+  max-width: 1050px;
+  margin: auto;
+}
+
+a {
+  color: #326B91;
+}

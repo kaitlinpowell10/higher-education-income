@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Is a College Degree Worth It?",
+    "section": "",
+    "text": "College is often described as an investment in your future. But does earning a degree actually correspond with higher income across the United States?\nUsing data from the U.S. Census Bureau, this project explores how educational attainment and household income are related across different communities."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "index.html#the-education-equation",
+    "href": "index.html#the-education-equation",
+    "title": "Is a College Degree Worth It?",
+    "section": "",
+    "text": "College is often described as an investment in your future. But does earning a degree actually correspond with higher income across the United States?\nUsing data from the U.S. Census Bureau, this project explores how educational attainment and household income are related across different communities."
+  },
+  {
+    "objectID": "index.html#what-were-investigating",
+    "href": "index.html#what-were-investigating",
+    "title": "Is a College Degree Worth It?",
+    "section": "What We’re Investigating",
+    "text": "What We’re Investigating\n\nEducation\nWhat percentage of adults have earned a bachelor’s degree or higher?\n\n\nIncome\nHow does median household income differ across communities?\n\n\nGeography\nDoes the relationship between education and income change across Sarasota County, Florida, and the United States?"
+  },
+  {
+    "objectID": "index.html#explore-the-data",
+    "href": "index.html#explore-the-data",
+    "title": "Is a College Degree Worth It?",
+    "section": "Explore the Data",
+    "text": "Explore the Data\nComing soon: Interactive Census maps, state comparisons, and visualizations of education and income."
+  },
+  {
+    "objectID": "index.html#why-this-matters",
+    "href": "index.html#why-this-matters",
+    "title": "Is a College Degree Worth It?",
+    "section": "Why This Matters",
+    "text": "Why This Matters\nUnderstanding the relationship between education and income can help us better understand economic opportunity, inequality, and the value of higher education.\nData source: U.S. Census Bureau, American Community Survey."
+  }
+]
