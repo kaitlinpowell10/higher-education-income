@@ -14,34 +14,6 @@
     "text": "Does having more college graduates in a community correspond with higher household income?\nThis project explores the relationship between educational attainment and economic opportunity using publicly available data from the U.S. Census Bureau.\n\n\n\n\n\n\nNoteResearch Hypothesis\n\n\n\nCommunities with higher percentages of college graduates will generally have higher median household incomes."
   },
   {
-    "objectID": "index.html#what-were-investigating",
-    "href": "index.html#what-were-investigating",
-    "title": "Is a College Degree Worth It?",
-    "section": "What We’re Investigating",
-    "text": "What We’re Investigating\n\nEducation\nWhat percentage of adults have earned a bachelor’s degree or higher?\n\n\nIncome\nHow does median household income differ across communities?\n\n\nGeography\nDoes the relationship between education and income change across Sarasota County, Florida, and the United States?"
-  },
-  {
-    "objectID": "index.html#explore-the-data",
-    "href": "index.html#explore-the-data",
-    "title": "Is a College Degree Worth It?",
-    "section": "Explore the Data",
-    "text": "Explore the Data\nComing soon: Interactive Census maps, state comparisons, and visualizations of education and income."
-  },
-  {
-    "objectID": "index.html#why-this-matters",
-    "href": "index.html#why-this-matters",
-    "title": "Is a College Degree Worth It?",
-    "section": "Why This Matters",
-    "text": "Why This Matters\nUnderstanding the relationship between education and income can help us better understand economic opportunity, inequality, and the value of higher education.\nData source: U.S. Census Bureau, American Community Survey."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site"
-  },
-  {
     "objectID": "index.html#explore-real-census-data",
     "href": "index.html#explore-real-census-data",
     "title": "Is a College Degree Worth It?",
@@ -75,5 +47,12 @@
     "title": "Is a College Degree Worth It?",
     "section": "🌎 Future Research",
     "text": "🌎 Future Research\nFuture versions of this project could compare counties throughout Florida and states across the United States, using interactive graphs and maps.\n\nData Source: U.S. Census Bureau, QuickFacts and American Community Survey.\nThis is an exploratory project. No causal conclusions are drawn from the comparisons."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
   }
 ]
