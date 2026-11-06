@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>About – The Education Equation</title>
+<title>Research notes – The Education Equation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -75,6 +110,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -121,7 +185,8 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About</h1>
+<h1 class="title">Research notes</h1>
+<p class="subtitle lead">Sources, methods &amp; limitations</p>
 </div>
 
 
@@ -138,9 +203,57 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>About this site</p>
+<section id="research-question" class="level2">
+<h2 class="anchored" data-anchor-id="research-question">Research question</h2>
+<p>Do states with a higher percentage of adults age 25 and older holding a bachelor’s degree or higher also have higher median household incomes? A Florida county map provides a closer look at local variation.</p>
+</section>
+<section id="census-data-sources" class="level2">
+<h2 class="anchored" data-anchor-id="census-data-sources">Census data sources</h2>
+<p>This project uses the U.S. Census Bureau’s <strong>2024 American Community Survey (ACS) five-year estimates</strong>:</p>
+<ul>
+<li><a href="https://data.census.gov/table/ACSDT5Y2024.B15003">Table B15003 — Educational Attainment for the Population 25 Years and Over</a></li>
+<li><a href="https://data.census.gov/table/ACSDT5Y2024.B19013">Table B19013 — Median Household Income in the Past 12 Months</a></li>
+<li><a href="https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/">2024 ACS five-year detailed-table downloads</a></li>
+<li><a href="https://www2.census.gov/geo/docs/reference/state.txt">Census Bureau state FIPS and name reference</a></li>
+<li><a href="https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html">2024 Census cartographic boundary files</a></li>
+</ul>
+<p>The downloaded files are the official Census table-based Summary File records for B15003 and B19013. Florida county boundaries are retrieved from the Census Bureau through the R package <code>tigris</code>. These sources are public and do not require a Census API key.</p>
+</section>
+<section id="measures" class="level2">
+<h2 class="anchored" data-anchor-id="measures">Measures</h2>
+<p>For each state and Florida county, the educational-attainment percentage is:</p>
+<p><span class="math display">\[
+\frac{
+\text{Bachelor's degree}+\text{Master's degree}+
+\text{Professional school degree}+\text{Doctorate degree}
+}{
+\text{Population age 25 and older}
+}\times 100
+\]</span></p>
+<p>In the table-based Summary File, the numerator uses B15003 estimates 022 through 025, and the denominator uses B15003 estimate 001. Median household income is B19013 estimate 001.</p>
+<p>The 2024 ACS five-year estimates represent data collected over <strong>2020–2024</strong>. Income estimates are inflation-adjusted to 2024 dollars. The five-year period is not a one-year snapshot.</p>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
+<p>The scatterplot contains 50 state estimates, with each state given equal weight. It shows the Pearson correlation and an ordinary least-squares trend line. The two ranking charts list the ten states with the highest educational-attainment percentages and highest median household incomes. Florida county estimates use the same definitions; Sarasota County is highlighted for reference.</p>
+<p>The analysis is descriptive. It does not incorporate ACS margins of error, population weights, cost-of-living adjustments, or other explanatory variables. Consequently, small differences in state rankings should not be treated as statistically significant.</p>
+</section>
+<section id="interpretation-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-limitations">Interpretation &amp; limitations</h2>
+<p>A positive association between two state-level measures cannot establish that education caused higher income. Industry mix, urbanization, household composition, living costs, migration, and other factors may contribute to the observed pattern. State averages also conceal differences among counties and individuals—a form of ecological inference limitation.</p>
+<p>The estimates describe communities, not an individual’s likely income based on their degree. They should not be interpreted as causal effects or individual predictions.</p>
+</section>
+<section id="reproduce-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="reproduce-the-data">Reproduce the data</h2>
+<p>From the project directory, run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> download_data.R</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> prepare_data.R</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The downloader saves source files under <code>data/raw/</code>. The preparation script filters and joins the official estimates, verifies that all 50 states and 67 Florida counties are present, and writes the compact datasets and county map used by the website. <code>data/raw/</code> is ignored by Git; the prepared CSV and GeoJSON files are the site’s inputs.</p>
+<p>To publish the Quarto site, use <code>quarto publish gh-pages</code> from the project directory.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -550,7 +663,7 @@ ul.task-list li input[type="checkbox"] {
       &nbsp;
     </div>   
     <div class="nav-footer-center">
-<p>The Education Equation | U.S. Census Research Project</p>
+<p>The Education Equation · 2024 ACS five-year estimates · Correlation, not causation</p>
 </div>
     <div class="nav-footer-right">
       &nbsp;

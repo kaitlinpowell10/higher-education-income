@@ -1,81 +1,380 @@
 ---
-title: "Is a College Degree Worth It?"
-subtitle: "Exploring Education and Income Across America"
+title: "The Education Equation"
+subtitle: "Does higher education lead to higher income?"
 title-block-banner: true
 ---
 
-## 🎓 The Education Equation
+```{r}
+#| include: false
+#| message: false
+#| warning: false
 
-Does having more college graduates in a community
-correspond with higher household income?
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(readr)
 
-This project explores the relationship between educational
-attainment and economic opportunity using publicly
-available data from the U.S. Census Bureau.
+states <- read_csv("data/state_acs_2024.csv", show_col_types = FALSE)
+florida_counties <- read_csv(
+  "data/florida_county_acs_2024.csv",
+  show_col_types = FALSE
+)
+county_shapes <- sf::st_read("data/florida_counties.geojson", quiet = TRUE) |>
+  sf::st_transform(4326) |>
+  select(GEOID)
+county_geojson <- jsonlite::fromJSON(
+  geojsonsf::sf_geojson(county_shapes),
+  simplifyVector = FALSE
+)
 
-::: {.callout-note}
-## Research Hypothesis
+correlation <- cor(
+  states$bachelors_plus_pct,
+  states$median_household_income
+)
+income_model <- lm(
+  median_household_income ~ bachelors_plus_pct,
+  data = states
+)
+state_residuals <- states |>
+  mutate(income_residual = residuals(income_model))
+above_trend <- state_residuals |>
+  slice_max(income_residual, n = 1)
+below_trend <- state_residuals |>
+  slice_min(income_residual, n = 1)
+top_education <- states |>
+  slice_max(bachelors_plus_pct, n = 10, with_ties = FALSE) |>
+  arrange(bachelors_plus_pct)
+top_income <- states |>
+  slice_max(median_household_income, n = 10, with_ties = FALSE) |>
+  arrange(median_household_income)
+sarasota <- florida_counties |>
+  filter(NAME == "Sarasota") |>
+  mutate(highlight_value = 1)
+```
 
-Communities with higher percentages of college graduates
-will generally have higher median household incomes.
+<div class="dashboard-intro">
+  <div class="intro-seal" aria-hidden="true"><i class="bi bi-mortarboard-fill"></i></div>
+  <p class="eyebrow">A data-led research brief</p>
+  <p>Across the United States, do places with more college graduates also report higher household incomes? Explore the 2024 American Community Survey estimates below—from the state-level pattern to Florida's counties.</p>
+  <div class="data-ribbon"><span>2024 ACS · 5-year estimates</span><span>50 states</span><span>67 Florida counties</span></div>
+</div>
+
+::: {.stat-grid}
+::: {.stat-card}
+<span class="stat-label">STATE-LEVEL ASSOCIATION</span>
+<div class="number">`r sprintf("%.2f", correlation)`</div>
+<div class="description">Pearson correlation between degree attainment and household income</div>
 :::
 
-## 📊 Explore Real Census Data
+::: {.stat-card}
+<span class="stat-label">HIGHEST DEGREE SHARE</span>
+<div class="number">`r sprintf("%.1f%%", max(states$bachelors_plus_pct))`</div>
+<div class="description">`r states$state[which.max(states$bachelors_plus_pct)]` adults age 25+ hold a bachelor's degree or higher</div>
+:::
 
-The U.S. Census Bureau publishes information about
-education and household income through its American
-Community Survey.
+::: {.stat-card}
+<span class="stat-label">FLORIDA COUNTIES</span>
+<div class="number">67</div>
+<div class="description">County estimates, with Sarasota highlighted on the map</div>
+:::
+:::
 
-The following official Census QuickFacts pages provide
-education and income statistics for three locations.
+## The national picture
 
-| Location | Census Data |
-|---|---|
-| Sarasota County, Florida | [View Census Data](https://www.census.gov/quickfacts/fact/table/sarasotacountyflorida/PST045224) |
-| Florida | [View Census Data](https://www.census.gov/quickfacts/fact/table/FL/PST045224) |
-| United States | [View Census Data](https://www.census.gov/quickfacts/fact/table/US/PST045224) |
+::: {.chart-card .map-card}
+### College graduates across the states
 
-## 📈 What Are We Comparing?
+Share of adults age 25 and older with a bachelor's degree or higher. Hover over a state to compare educational attainment and median household income.
 
-### Educational Attainment
+```{r}
+#| label: fig-state-map
+#| echo: false
+#| warning: false
+#| message: false
 
-The percentage of adults age 25 and older who have
-earned a bachelor's degree or higher.
+plot_ly(
+  data = states,
+  type = "choropleth",
+  locations = ~abbreviation,
+  locationmode = "USA-states",
+  z = ~bachelors_plus_pct,
+  text = ~paste0(
+    "<b>", state, "</b>",
+    "<br>Adults with bachelor's degree or higher: ",
+    sprintf("%.1f%%", bachelors_plus_pct),
+    "<br>Median household income: $",
+    scales::comma(median_household_income)
+  ),
+  hovertemplate = "%{text}<extra></extra>",
+  colorscale = list(
+    c(0, "#10243A"),
+    c(0.52, "#82919A"),
+    c(1, "#C8A66A")
+  ),
+  zmin = 20,
+  zmax = 50,
+  colorbar = list(title = "Bachelor's or higher (%)"),
+  marker = list(line = list(color = "#FAF7F0", width = 0.8))
+) |>
+  layout(
+    geo = list(
+      scope = "usa",
+      projection = list(type = "albers usa"),
+      showlakes = TRUE,
+      lakecolor = "#FAF7F0",
+      bgcolor = "#FAF7F0"
+    ),
+    margin = list(l = 0, r = 0, t = 10, b = 0),
+    paper_bgcolor = "#FAF7F0",
+    font = list(family = "DM Sans", color = "#10243A")
+  ) |>
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+:::
 
-### Household Income
+::: {.chart-grid}
+::: {.chart-card}
+### Education & income
 
-Median household income, which represents the midpoint
-of household incomes in a community.
+Each point is one state; the dashed line is a descriptive linear trend.
 
-## 🔍 Why These Variables Matter
+```{r}
+#| label: fig-state-relationship
+#| echo: false
+#| warning: false
+#| message: false
 
-Education is often associated with greater employment
-opportunities and earning potential.
+trend <- states |>
+  arrange(bachelors_plus_pct) |>
+  mutate(
+    fitted_income = predict(
+      income_model,
+      newdata = data.frame(bachelors_plus_pct = bachelors_plus_pct)
+    )
+  )
 
-By comparing educational attainment and household income,
-we can investigate whether communities with more college
-graduates also tend to have higher incomes.
+plot_ly(
+  data = states,
+  x = ~bachelors_plus_pct,
+  y = ~median_household_income,
+  type = "scatter",
+  mode = "markers",
+  text = ~paste0(
+    "<b>", state, " (", abbreviation, ")</b>",
+    "<br>Adults with bachelor's degree or higher: ",
+    sprintf("%.1f%%", bachelors_plus_pct),
+    "<br>Median household income: $",
+    scales::comma(median_household_income)
+  ),
+  hovertemplate = "%{text}<extra></extra>",
+  marker = list(
+    color = "#C8A66A",
+    size = 10,
+    line = list(color = "#10243A", width = 1)
+  )
+) |>
+  add_trace(
+    data = trend,
+    x = ~bachelors_plus_pct,
+    y = ~fitted_income,
+    type = "scatter",
+    mode = "lines",
+    name = "Linear trend",
+    inherit = FALSE,
+    line = list(color = "#10243A", width = 2, dash = "dash"),
+    hoverinfo = "skip",
+    showlegend = FALSE
+  ) |>
+  layout(
+    xaxis = list(title = "Adults age 25+ with bachelor's degree or higher (%)"),
+    yaxis = list(title = "Median household income", tickprefix = "$", separatethousands = TRUE),
+    margin = list(l = 75, r = 20, t = 15, b = 65),
+    paper_bgcolor = "#FAF7F0",
+    plot_bgcolor = "#FAF7F0",
+    font = list(family = "DM Sans", color = "#10243A"),
+    annotations = list(
+      list(
+        text = paste0("Pearson r = ", sprintf("%.2f", correlation)),
+        x = 0.02,
+        y = 0.98,
+        xref = "paper",
+        yref = "paper",
+        xanchor = "left",
+        yanchor = "top",
+        showarrow = FALSE,
+        bgcolor = "white",
+        bordercolor = "#C8A66A",
+        borderpad = 6
+      )
+    )
+  ) |>
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+:::
 
-However, a relationship between these variables does not
-necessarily mean that education directly causes higher
-income.
+::: {.chart-card}
+### Highest degree attainment
 
-## 🏛️ Why This Research Matters
+Top 10 states by share of adults with a bachelor's degree or higher.
 
-Understanding the relationship between education and
-income can contribute to discussions about economic
-mobility, educational opportunity, and inequality.
+```{r}
+#| label: fig-top-education
+#| echo: false
+#| warning: false
+#| message: false
 
-## 🌎 Future Research
+education_bars <- ggplot(
+  top_education,
+  aes(
+    x = bachelors_plus_pct,
+    y = reorder(state, bachelors_plus_pct),
+    text = paste0(state, ": ", sprintf("%.1f%%", bachelors_plus_pct))
+  )
+) +
+  geom_col(fill = "#C8A66A", width = 0.7) +
+  scale_x_continuous(labels = scales::label_percent(scale = 1)) +
+  labs(x = "Adults age 25+ (%)", y = NULL) +
+  theme_minimal(base_family = "DM Sans") +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(color = "#10243A"),
+    plot.background = element_rect(fill = "#FAF7F0", color = NA),
+    panel.background = element_rect(fill = "#FAF7F0", color = NA)
+  )
 
-Future versions of this project could compare counties
-throughout Florida and states across the United States,
-using interactive graphs and maps.
+ggplotly(education_bars, tooltip = "text") |>
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+:::
 
----
+::: {.chart-card}
+### Highest household incomes
 
-**Data Source:** U.S. Census Bureau, QuickFacts and
-American Community Survey.
+Top 10 states by median household income.
 
-*This is an exploratory project. No causal conclusions
-are drawn from the comparisons.*
+```{r}
+#| label: fig-top-income
+#| echo: false
+#| warning: false
+#| message: false
+
+income_bars <- ggplot(
+  top_income,
+  aes(
+    x = median_household_income,
+    y = reorder(state, median_household_income),
+    text = paste0(state, ": $", scales::comma(median_household_income))
+  )
+) +
+  geom_col(fill = "#234766", width = 0.7) +
+  scale_x_continuous(labels = scales::label_dollar()) +
+  labs(x = "Median household income", y = NULL) +
+  theme_minimal(base_family = "DM Sans") +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(color = "#10243A"),
+    plot.background = element_rect(fill = "#FAF7F0", color = NA),
+    panel.background = element_rect(fill = "#FAF7F0", color = NA)
+  )
+
+ggplotly(income_bars, tooltip = "text") |>
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+:::
+:::
+
+## Florida, county by county
+
+::: {.chart-card .map-card}
+### Educational attainment in Florida
+
+The map uses the same measure as the state comparison. Sarasota County is highlighted in gold; hover over a county for its education percentage and median household income.
+
+```{r}
+#| label: fig-florida-map
+#| echo: false
+#| warning: false
+#| message: false
+
+plot_ly(
+  data = florida_counties,
+  type = "choropleth",
+  geojson = county_geojson,
+  featureidkey = "properties.GEOID",
+  locations = ~GEOID,
+  z = ~bachelors_plus_pct,
+  text = ~paste0(
+    "<b>", county, "</b>",
+    "<br>Adults with bachelor's degree or higher: ",
+    sprintf("%.1f%%", bachelors_plus_pct),
+    "<br>Median household income: $",
+    scales::comma(median_household_income)
+  ),
+  hovertemplate = "%{text}<extra></extra>",
+  colorscale = list(
+    c(0, "#10243A"),
+    c(0.52, "#82919A"),
+    c(1, "#C8A66A")
+  ),
+  zmin = 20,
+  zmax = 50,
+  colorbar = list(title = "Bachelor's or higher (%)"),
+  marker = list(line = list(color = "white", width = 0.7))
+) |>
+  add_trace(
+    data = sarasota,
+    type = "choropleth",
+    geojson = county_geojson,
+    featureidkey = "properties.GEOID",
+    locations = ~GEOID,
+    z = ~highlight_value,
+    text = ~paste0(
+      "<b>Sarasota County</b>",
+      "<br>Adults with bachelor's degree or higher: ",
+      sprintf("%.1f%%", bachelors_plus_pct),
+      "<br>Median household income: $",
+      scales::comma(median_household_income)
+    ),
+    hovertemplate = "%{text}<extra></extra>",
+    colorscale = list(c(0, "#C8A66A"), c(1, "#C8A66A")),
+    zmin = 0,
+    zmax = 1,
+    showscale = FALSE,
+    marker = list(line = list(color = "white", width = 2))
+  ) |>
+  layout(
+    geo = list(
+      scope = "usa",
+      fitbounds = "locations",
+      projection = list(type = "mercator"),
+      bgcolor = "#FAF7F0"
+    ),
+    margin = list(l = 0, r = 0, t = 10, b = 0),
+    paper_bgcolor = "#FAF7F0",
+    font = list(family = "DM Sans", color = "#10243A")
+  ) |>
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+:::
+
+## What the pattern suggests
+
+The association across the 50 states is positive (`r sprintf("%.2f", correlation)`), but it is not uniform. **`r above_trend$state`** sits furthest above the fitted line: its household income is higher than the line would predict for its degree share. **`r below_trend$state`** sits furthest below it. These are descriptive outliers, not explanations of why income differs.
+
+The top-10 lists overlap, but not perfectly. High educational attainment tends to accompany higher state median incomes in this comparison; housing costs, industry mix, household structure, migration, and many other factors also differ across states. State averages can hide substantial local variation.
+
+::: {.callout-important}
+## Correlation is not causation
+
+This is an ecological, state-level comparison—not evidence that obtaining a degree causes a household's income to rise. It does not adjust for confounding factors or ACS margins of error, and it should not be used to predict individual outcomes.
+:::
+
+## Data & methodology
+
+Educational attainment is calculated as the combined estimates for bachelor's, master's, professional, and doctoral degrees in table B15003, divided by the total population age 25 and older. Median household income comes from table B19013. State estimates use one observation per state; the Pearson correlation and ordinary least-squares trend are unweighted.
+
+The 2024 ACS five-year estimates summarize survey responses collected over **2020–2024**; income estimates are in 2024 inflation-adjusted dollars. Florida county boundaries come from the Census Bureau's 2024 cartographic boundary files.
+
+The 2024 detailed-table files and state reference file are public downloads from the [U.S. Census Bureau ACS Summary File](https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/) and [Census state reference file](https://www2.census.gov/geo/docs/reference/state.txt). No API key is used.
+
+See the [research notes and reproducibility details](about.qmd) for source links, table variables, and limitations.

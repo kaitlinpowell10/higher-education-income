@@ -3,6 +3,7 @@ project:
 
 website:
   title: "The Education Equation"
+  site-url: "https://kaitlinpowell10.github.io/higher-education-income/"
   navbar:
     background: "#10243A"
     foreground: "#FFFFFF"
@@ -12,7 +13,7 @@ website:
       - text: "Research"
         href: about.qmd
   page-footer:
-    center: "The Education Equation | U.S. Census Research Project"
+    center: "The Education Equation · 2024 ACS five-year estimates · Correlation, not causation"
 
 format:
   html:
@@ -20,3 +21,4 @@ format:
     css: styles.css
     toc: false
     smooth-scroll: true
+    lang: en

@@ -1,5 +1,63 @@
 ---
-title: "About"
+title: "Research notes"
+subtitle: "Sources, methods & limitations"
 ---
 
-About this site
+## Research question
+
+Do states with a higher percentage of adults age 25 and older holding a bachelor's degree or higher also have higher median household incomes? A Florida county map provides a closer look at local variation.
+
+## Census data sources
+
+This project uses the U.S. Census Bureau's **2024 American Community Survey (ACS) five-year estimates**:
+
+- [Table B15003 — Educational Attainment for the Population 25 Years and Over](https://data.census.gov/table/ACSDT5Y2024.B15003)
+- [Table B19013 — Median Household Income in the Past 12 Months](https://data.census.gov/table/ACSDT5Y2024.B19013)
+- [2024 ACS five-year detailed-table downloads](https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/)
+- [Census Bureau state FIPS and name reference](https://www2.census.gov/geo/docs/reference/state.txt)
+- [2024 Census cartographic boundary files](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html)
+
+The downloaded files are the official Census table-based Summary File records for B15003 and B19013. Florida county boundaries are retrieved from the Census Bureau through the R package `tigris`. These sources are public and do not require a Census API key.
+
+## Measures
+
+For each state and Florida county, the educational-attainment percentage is:
+
+$$
+\frac{
+\text{Bachelor's degree}+\text{Master's degree}+
+\text{Professional school degree}+\text{Doctorate degree}
+}{
+\text{Population age 25 and older}
+}\times 100
+$$
+
+In the table-based Summary File, the numerator uses B15003 estimates 022 through 025, and the denominator uses B15003 estimate 001. Median household income is B19013 estimate 001.
+
+The 2024 ACS five-year estimates represent data collected over **2020–2024**. Income estimates are inflation-adjusted to 2024 dollars. The five-year period is not a one-year snapshot.
+
+## Analysis
+
+The scatterplot contains 50 state estimates, with each state given equal weight. It shows the Pearson correlation and an ordinary least-squares trend line. The two ranking charts list the ten states with the highest educational-attainment percentages and highest median household incomes. Florida county estimates use the same definitions; Sarasota County is highlighted for reference.
+
+The analysis is descriptive. It does not incorporate ACS margins of error, population weights, cost-of-living adjustments, or other explanatory variables. Consequently, small differences in state rankings should not be treated as statistically significant.
+
+## Interpretation & limitations
+
+A positive association between two state-level measures cannot establish that education caused higher income. Industry mix, urbanization, household composition, living costs, migration, and other factors may contribute to the observed pattern. State averages also conceal differences among counties and individuals—a form of ecological inference limitation.
+
+The estimates describe communities, not an individual's likely income based on their degree. They should not be interpreted as causal effects or individual predictions.
+
+## Reproduce the data
+
+From the project directory, run:
+
+```bash
+Rscript download_data.R
+Rscript prepare_data.R
+quarto render
+```
+
+The downloader saves source files under `data/raw/`. The preparation script filters and joins the official estimates, verifies that all 50 states and 67 Florida counties are present, and writes the compact datasets and county map used by the website. `data/raw/` is ignored by Git; the prepared CSV and GeoJSON files are the site's inputs.
+
+To publish the Quarto site, use `quarto publish gh-pages` from the project directory.
